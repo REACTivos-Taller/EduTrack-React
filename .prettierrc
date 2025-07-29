@@ -1,0 +1,7 @@
+{
+  "experimentalTernaries": true,
+  "singleQuote": true,
+  "printWidth": 95,
+  "semi": false,
+  "plugins": ["prettier-plugin-tailwindcss"]
+}
