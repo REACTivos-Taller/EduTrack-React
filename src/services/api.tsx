@@ -75,7 +75,7 @@ export const addRegistry = async (data: {
     return response
   } catch (e) {
     console.error('Error al registrar movimiento', e)
-    return handleError(e)
+    return handleError(e as Error)
   }
 }
 
@@ -91,6 +91,6 @@ export const getRegistries = async (): Promise<
     return { success: true, registries: data.records }
   } catch (e) {
     console.error('Error al obtener registros', e)
-    return handleError(e)
+    return handleError(e as Error)
   }
 }
