@@ -16,3 +16,12 @@
   --color-accent: #6279b8;
   --color-secondary: #21252f;
 }
+
+
+@keyframes slide-in {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out forwards;
+}

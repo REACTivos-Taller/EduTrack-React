@@ -10,7 +10,7 @@ export const msalConfig: Configuration = {
   auth: {
     clientId: '2e4ad287-19ec-46a6-af4b-06f831cb442b', // This is the ONLY mandatory field that you need to supply.
     authority: 'https://login.microsoftonline.com/5545b48f-b22f-4bbb-bba5-7f5040667180', // Replace the placeholder with your tenant info
-    redirectUri: 'http://localhost:5173', // Points to window.location.origin. You must register this URI on Microsoft Entra admin center/App Registration.
+    redirectUri: 'https://paulozzz.web.app', // Points to window.location.origin. You must register this URI on Microsoft Entra admin center/App Registration.
     postLogoutRedirectUri: '/', // Indicates the page to navigate after logout.
     navigateToLoginRequestUrl: false, // If "true", will navigate back to the original request location before processing the auth code response.
   },
