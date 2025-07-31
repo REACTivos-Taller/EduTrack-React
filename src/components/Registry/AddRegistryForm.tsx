@@ -10,31 +10,21 @@ export const AddRegistryForm: React.FC = () => {
   const [errors, setErrors] = useState<{ card?: string; room?: string }>({})
   const { addRegistry, isLoading } = useAddRegistry()
 
-  // Opciones de salón sin guiones
   const classroomOptions = [
-    ...Array.from({ length: 29 }, (_, i) => `C${11 + i}`), // C11..C39
-    'G12',
-    'B21',
-    'I23',
-    'I1',
-    'I25',
-    'B3',
-    'B2',
-    'B22',
+    ...Array.from({ length: 29 }, (_, i) => `C${11 + i}`),
+    'G12', 'B21', 'I23', 'I1', 'I25', 'B3', 'B2', 'B22',
   ]
 
-  // Validación carné
   useEffect(() => {
     setErrors((e) => ({
       ...e,
       card:
-        studentCardNumber && !/^\d{7}$/.test(studentCardNumber) ?
-          'El carné debe tener 7 dígitos'
-        : undefined,
+        studentCardNumber && !/^\d{7}$/.test(studentCardNumber)
+          ? 'El carné debe tener 7 dígitos'
+          : undefined,
     }))
   }, [studentCardNumber])
 
-  // Validación salón
   useEffect(() => {
     setErrors((e) => ({
       ...e,
@@ -48,7 +38,9 @@ export const AddRegistryForm: React.FC = () => {
       toast.error('Corrige los errores antes de enviar')
       return
     }
+
     const record = await addRegistry(studentCardNumber, type, classroom)
+
     if (record && !('error' in record)) {
       setStudentCardNumber('')
       setClassroom('')
@@ -61,17 +53,13 @@ export const AddRegistryForm: React.FC = () => {
   }
 
   return (
-    <div className="mx-auto max-w-xl rounded-2xl bg-white p-8 shadow-xl dark:bg-gray-800">
-      <h2 className="mb-6 text-center text-4xl font-extrabold text-gray-900 dark:text-gray-100">
-        Nuevo Registro
-      </h2>
-      <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="mx-auto max-w-xl rounded-2xl border border-[#d2d0ce] bg-white/70 backdrop-blur-md p-8 shadow-2xl">
+      <h2 className="mb-6 text-center text-4xl font-bold text-[#323130]">Nuevo Registro</h2>
+
+      <form onSubmit={handleSubmit} className="space-y-6 text-[#323130]">
         {/* Carné */}
         <div>
-          <label
-            htmlFor="studentCardNumber"
-            className="mb-2 block text-2xl font-semibold text-gray-700 dark:text-gray-200"
-          >
+          <label htmlFor="studentCardNumber" className="mb-2 block text-xl font-medium">
             Carné de Alumno
           </label>
           <input
@@ -82,28 +70,25 @@ export const AddRegistryForm: React.FC = () => {
             value={studentCardNumber}
             onChange={(e) => setStudentCardNumber(e.target.value.replace(/\D/g, ''))}
             placeholder="Ej. 2023179"
-            className={`w-full rounded-lg border-2 p-4 text-2xl focus:outline-none ${
-              errors.card ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
-            }`}
+            className={`w-full rounded-lg border px-4 py-3 text-xl focus:outline-none focus:ring-2 focus:ring-[#106ebe] ${
+              errors.card ? 'border-red-500' : 'border-gray-300'
+            } bg-white/90 backdrop-blur-sm`}
           />
-          {errors.card && <p className="mt-1 text-lg text-red-600">{errors.card}</p>}
+          {errors.card && <p className="mt-1 text-sm text-red-600">{errors.card}</p>}
         </div>
 
         {/* Salón */}
         <div>
-          <label
-            htmlFor="classroom"
-            className="mb-2 block text-2xl font-semibold text-gray-700 dark:text-gray-200"
-          >
+          <label htmlFor="classroom" className="mb-2 block text-xl font-medium">
             Salón
           </label>
           <select
             id="classroom"
             value={classroom}
             onChange={(e) => setClassroom(e.target.value)}
-            className={`w-full rounded-lg border-2 p-4 text-2xl focus:outline-none ${
-              errors.room ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'
-            }`}
+            className={`w-full rounded-lg border px-4 py-3 text-xl focus:outline-none focus:ring-2 focus:ring-[#106ebe] ${
+              errors.room ? 'border-red-500' : 'border-gray-300'
+            } bg-white/90 backdrop-blur-sm`}
           >
             <option value="">-- Selecciona Salón --</option>
             {classroomOptions.map((opt) => (
@@ -112,25 +97,23 @@ export const AddRegistryForm: React.FC = () => {
               </option>
             ))}
           </select>
-          {errors.room && <p className="mt-1 text-lg text-red-600">{errors.room}</p>}
+          {errors.room && <p className="mt-1 text-sm text-red-600">{errors.room}</p>}
         </div>
 
         {/* Tipo de Movimiento */}
         <div>
-          <p className="mb-2 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-            Tipo de Movimiento
-          </p>
+          <p className="mb-2 text-xl font-medium">Tipo de Movimiento</p>
           <div className="flex gap-4">
             {(['entry', 'exit'] as RegistryType[]).map((opt) => (
               <button
                 key={opt}
                 type="button"
                 onClick={() => setType(opt)}
-                className={`flex-1 rounded-lg py-4 text-2xl font-medium transition ${
-                  type === opt ?
-                    'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600'
-                }`}
+                className={`flex-1 rounded-lg py-3 text-lg font-semibold transition shadow-sm ${
+                  type === opt
+                    ? 'bg-[#106ebe] text-white'
+                    : 'bg-white/80 text-[#323130] border border-[#c8c6c4] hover:bg-[#f3f2f1]'
+                } backdrop-blur-sm`}
               >
                 {opt === 'entry' ? 'Entrada' : 'Salida'}
               </button>
@@ -138,12 +121,12 @@ export const AddRegistryForm: React.FC = () => {
           </div>
         </div>
 
-        {/* Botón de envío */}
+        {/* Botón de Envío */}
         <div>
           <button
             type="submit"
             disabled={isLoading || !!errors.card || !!errors.room}
-            className="w-full rounded-xl bg-blue-600 py-5 text-2xl font-bold text-white transition hover:bg-blue-700 disabled:opacity-50"
+            className="w-full rounded-lg bg-[#106ebe] py-4 text-xl font-bold text-white hover:bg-[#005a9e] transition disabled:opacity-50 shadow-md"
           >
             {isLoading ? 'Guardando...' : 'Registrar Movimiento'}
           </button>
