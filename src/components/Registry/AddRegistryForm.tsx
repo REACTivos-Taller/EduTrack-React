@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useAddRegistry } from '../../shared/hooks/useAddRegistry';
 import type { RegistryType } from '../../services/api';
 import toast from 'react-hot-toast';
+import { Listbox } from '@headlessui/react';
+import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 
 // 1. Define la interfaz de las props
 interface AddRegistryFormProps {
@@ -51,7 +53,7 @@ export const AddRegistryForm: React.FC<AddRegistryFormProps> = ({ onClose }) => 
       setStudentCardNumber('');
       setClassroom('');
       toast.success('Movimiento registrado con éxito');
-      onClose(); // Llama a onClose para cerrar el modal
+      onClose();
     } else if (record && 'message' in record) {
       toast.error(String(record.message));
     } else {
@@ -62,19 +64,15 @@ export const AddRegistryForm: React.FC<AddRegistryFormProps> = ({ onClose }) => 
   const handleCancel = () => {
     setStudentCardNumber('');
     setClassroom('');
-    onClose(); // Llama a onClose para cerrar el modal
+    onClose();
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-500/50">
       <div
         className="w-full max-w-md rounded-2xl bg-white p-0 shadow-xl relative"
-        style={{
-          minWidth: 400,
-          minHeight: 340,
-        }}
+        style={{ minWidth: 400, minHeight: 340 }}
       >
-        {/* Cerrar (X) */}
         <button
           type="button"
           className="absolute top-5 right-6 text-[#9ca3af] hover:text-[#0067b8] text-2xl font-light focus:outline-none"
@@ -87,7 +85,6 @@ export const AddRegistryForm: React.FC<AddRegistryFormProps> = ({ onClose }) => 
         </button>
         <div className="flex flex-col items-center pt-8">
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#e0f2fe]">
-            {/* Nuevo icono SVG de un usuario con un signo de más */}
             <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#005a9e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-user-plus">
               <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
               <circle cx="9" cy="7" r="4"/>
@@ -117,25 +114,44 @@ export const AddRegistryForm: React.FC<AddRegistryFormProps> = ({ onClose }) => 
             />
             {errors.card && <p className="mt-1 text-xs text-red-500">{errors.card}</p>}
           </div>
-          {/* Salón */}
-          <div>
-            <select
-              id="classroom"
-              value={classroom}
-              onChange={(e) => setClassroom(e.target.value)}
-              className={`w-full rounded-lg border px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-[#0067b8] ${
-                errors.room ? 'border-red-400' : 'border-[#e5e7eb]'
-              } bg-white text-[#4b5563]`}
-            >
-              <option value="">Selecciona salón</option>
-              {classroomOptions.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
+
+          {/* Salón con Listbox */}
+          <div className="relative">
+            <Listbox value={classroom} onChange={setClassroom}>
+              <div className="relative w-full">
+                <Listbox.Button className={`w-full rounded-lg border px-4 py-2 text-left text-base bg-white focus:outline-none focus:ring-2 focus:ring-[#0067b8] ${
+                  errors.room ? 'border-red-400' : 'border-[#e5e7eb]'
+                }`}>
+                  <span className="block truncate">{classroom || 'Selecciona salón'}</span>
+                  <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                    <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                  </span>
+                </Listbox.Button>
+                <Listbox.Options className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  {classroomOptions.map((option) => (
+                    <Listbox.Option
+                      key={option}
+                      value={option}
+                      className={({ active }) =>
+                        `cursor-pointer select-none px-4 py-2 ${
+                          active ? 'bg-blue-100 text-blue-900' : 'text-gray-900'
+                        }`
+                      }
+                    >
+                      {({ selected }) => (
+                        <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
+                          {option}
+                          {selected && <CheckIcon className="ml-2 inline h-4 w-4 text-blue-600" />}
+                        </span>
+                      )}
+                    </Listbox.Option>
+                  ))}
+                </Listbox.Options>
+              </div>
+            </Listbox>
             {errors.room && <p className="mt-1 text-xs text-red-500">{errors.room}</p>}
           </div>
+
           {/* Tipo de Movimiento */}
           <div>
             <div className="flex gap-2">
@@ -155,6 +171,7 @@ export const AddRegistryForm: React.FC<AddRegistryFormProps> = ({ onClose }) => 
               ))}
             </div>
           </div>
+
           {/* Botones */}
           <div className="flex gap-2 mt-2">
             <button
