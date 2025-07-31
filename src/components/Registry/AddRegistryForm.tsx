@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAddRegistry } from '../../shared/hooks/useAddRegistry';
 import type { RegistryType } from '../../services/api';
@@ -67,7 +66,7 @@ export const AddRegistryForm: React.FC<AddRegistryFormProps> = ({ onClose }) => 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#e9ecf7]/80">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-500/50">
       <div
         className="w-full max-w-md rounded-2xl bg-white p-0 shadow-xl relative"
         style={{
@@ -78,7 +77,7 @@ export const AddRegistryForm: React.FC<AddRegistryFormProps> = ({ onClose }) => 
         {/* Cerrar (X) */}
         <button
           type="button"
-          className="absolute top-5 right-6 text-[#b3b8d0] hover:text-[#5a67d8] text-2xl font-light focus:outline-none"
+          className="absolute top-5 right-6 text-[#9ca3af] hover:text-[#0067b8] text-2xl font-light focus:outline-none"
           tabIndex={-1}
           aria-label="Cerrar"
           style={{ lineHeight: 1 }}
@@ -87,15 +86,17 @@ export const AddRegistryForm: React.FC<AddRegistryFormProps> = ({ onClose }) => 
           ×
         </button>
         <div className="flex flex-col items-center pt-8">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#e7eafc]">
-            <svg width="36" height="36" fill="none" viewBox="0 0 24 24">
-              <path d="M12 17v-4" stroke="#7b8bd1" strokeWidth="2" strokeLinecap="round"/>
-              <circle cx="12" cy="8" r="1" fill="#7b8bd1"/>
-              <circle cx="12" cy="12" r="10" stroke="#7b8bd1" strokeWidth="2"/>
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#e0f2fe]">
+            {/* Nuevo icono SVG de un usuario con un signo de más */}
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#005a9e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-user-plus">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <line x1="19" x2="19" y1="8" y2="14"/>
+              <line x1="16" x2="22" y1="11" y2="11"/>
             </svg>
           </div>
-          <h2 className="mb-1 text-center text-2xl font-bold text-[#6c7ae0] tracking-tight">Nuevo Registro</h2>
-          <p className="mb-6 text-center text-[#7b8bd1] text-base font-normal">
+          <h2 className="mb-1 text-center text-2xl font-bold text-[#0067b8] tracking-tight">Nuevo Registro</h2>
+          <p className="mb-6 text-center text-[#4b5563] text-base font-normal">
             Ingresa los datos para registrar el movimiento.
           </p>
         </div>
@@ -110,9 +111,9 @@ export const AddRegistryForm: React.FC<AddRegistryFormProps> = ({ onClose }) => 
               value={studentCardNumber}
               onChange={(e) => setStudentCardNumber(e.target.value.replace(/\D/g, ''))}
               placeholder="Carné de alumno"
-              className={`w-full rounded-lg border px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-[#6c7ae0] placeholder-[#b3b8d0] ${
-                errors.card ? 'border-red-400' : 'border-[#e2e6f3]'
-              } bg-[#f8f9fd]`}
+              className={`w-full rounded-lg border px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-[#0067b8] placeholder-[#9ca3af] ${
+                errors.card ? 'border-red-400' : 'border-[#e5e7eb]'
+              } bg-white`}
             />
             {errors.card && <p className="mt-1 text-xs text-red-500">{errors.card}</p>}
           </div>
@@ -122,9 +123,9 @@ export const AddRegistryForm: React.FC<AddRegistryFormProps> = ({ onClose }) => 
               id="classroom"
               value={classroom}
               onChange={(e) => setClassroom(e.target.value)}
-              className={`w-full rounded-lg border px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-[#6c7ae0] ${
-                errors.room ? 'border-red-400' : 'border-[#e2e6f3]'
-              } bg-[#f8f9fd] text-[#323130]`}
+              className={`w-full rounded-lg border px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-[#0067b8] ${
+                errors.room ? 'border-red-400' : 'border-[#e5e7eb]'
+              } bg-white text-[#4b5563]`}
             >
               <option value="">Selecciona salón</option>
               {classroomOptions.map((opt) => (
@@ -145,8 +146,8 @@ export const AddRegistryForm: React.FC<AddRegistryFormProps> = ({ onClose }) => 
                   onClick={() => setType(opt)}
                   className={`flex-1 rounded-lg py-2 text-base font-semibold transition shadow-sm ${
                     type === opt
-                      ? 'bg-[#6c7ae0] text-white'
-                      : 'bg-[#f1f3fa] text-[#323130] border border-[#e2e6f3] hover:bg-[#e7eafc]'
+                      ? 'bg-[#0067b8] text-white'
+                      : 'bg-[#f0f9ff] text-[#005a9e] border border-[#e5e7eb] hover:bg-[#e0f2fe]'
                   }`}
                 >
                   {opt === 'entry' ? 'Entrada' : 'Salida'}
@@ -159,13 +160,13 @@ export const AddRegistryForm: React.FC<AddRegistryFormProps> = ({ onClose }) => 
             <button
               type="submit"
               disabled={isLoading || !!errors.card || !!errors.room}
-              className="flex-1 rounded-lg bg-[#6c7ae0] py-2 text-base font-bold text-white shadow-sm hover:bg-[#4254b2] transition disabled:opacity-60"
+              className="flex-1 rounded-lg bg-[#0067b8] py-2 text-base font-bold text-white shadow-sm hover:bg-[#005a9e] transition disabled:opacity-60"
             >
               {isLoading ? 'Guardando...' : 'Registrar'}
             </button>
             <button
               type="button"
-              className="flex-1 rounded-lg bg-[#f1f3fa] py-2 text-base font-bold text-[#6c7ae0] shadow-sm hover:bg-[#e7eafc] transition"
+              className="flex-1 rounded-lg bg-[#f0f9ff] py-2 text-base font-bold text-[#0067b8] shadow-sm hover:bg-[#e0f2fe] transition"
               onClick={handleCancel}
             >
               Cancelar
