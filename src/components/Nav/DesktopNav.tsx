@@ -2,22 +2,18 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useUserDetails } from '../../shared/hooks/useUserDetails';
 import { useLogout } from '../../shared/hooks/useLogout';
-import { useTheme } from '../../shared/contexts/ThemeContext';
 
 import {
   Home,
   LayoutDashboard,
   LogIn,
   LogOut,
-  Moon,
-  Sun,
   UserPlus,
 } from 'lucide-react';
 
 export const DesktopNav: React.FC = () => {
   const { isAuthenticated, login, isLoading } = useUserDetails();
   const doLogout = useLogout();
-  const { theme, toggleTheme } = useTheme();
 
   const linkClasses = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-2 px-3 py-2 rounded-md transition-colors duration-200 text-sm font-medium
@@ -51,13 +47,6 @@ export const DesktopNav: React.FC = () => {
 
       {/* Right Buttons */}
       <div className="flex items-center space-x-3">
-        <button
-          onClick={toggleTheme}
-          aria-label="Toggle dark/light mode"
-          className="p-2 rounded-md bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition"
-        >
-          {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
-        </button>
 
         {!isLoading && (
           isAuthenticated ? (
