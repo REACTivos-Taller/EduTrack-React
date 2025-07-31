@@ -12,7 +12,8 @@ const imageModules = import.meta.glob('../../assets/imagenes/*.jpeg', {
 
 type Session = 'all' | 'mat' | 'ves'
 
-const PAGE_SIZE = 12
+const RECORDS_PER_PAGE = 12
+const CLASSROOMS_PER_PAGE = 12
 
 export const DashboardPage: React.FC = () => {
   const { fetchRegistries, registries, isLoading } = useGetRegistries()
@@ -23,6 +24,7 @@ export const DashboardPage: React.FC = () => {
     {},
   )
   const [pageByClass, setPageByClass] = useState<Record<string, number>>({})
+  const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
     fetchRegistries()
@@ -40,6 +42,15 @@ export const DashboardPage: React.FC = () => {
     return map
   }, [registries])
 
+  const classroomNames = Object.keys(grouped)
+  const totalClassroomPages = Math.ceil(
+    classroomNames.length / CLASSROOMS_PER_PAGE,
+  )
+  const paginatedClassrooms = classroomNames.slice(
+    (currentPage - 1) * CLASSROOMS_PER_PAGE,
+    currentPage * CLASSROOMS_PER_PAGE,
+  )
+
   const handleSelectDay = (cls: string, day: string | null) => {
     setSelectedDayByClass((p) => ({ ...p, [cls]: day }))
     setPageByClass((p) => ({ ...p, [cls]: 1 })) // Reset page on day change
@@ -50,8 +61,53 @@ export const DashboardPage: React.FC = () => {
     setPageByClass((p) => ({ ...p, [cls]: 1 })) // Reset page on session change
   }
 
-  const handlePageChange = (cls: string, newPage: number) => {
+  const handleRecordsPageChange = (cls: string, newPage: number) => {
     setPageByClass((p) => ({ ...p, [cls]: newPage }))
+  }
+
+  const handleClassroomPageChange = (newPage: number) => {
+    setCurrentPage(newPage)
+  }
+
+  const renderPageNumbers = () => {
+    const pages = []
+    const total = totalClassroomPages
+    const current = currentPage
+    const maxVisible = 5
+
+    if (total <= maxVisible) {
+      for (let i = 1; i <= total; i++) {
+        pages.push(i)
+      }
+    } else {
+      if (current <= 3) {
+        pages.push(1, 2, 3, '...', total)
+      } else if (current >= total - 2) {
+        pages.push(1, '...', total - 2, total - 1, total)
+      } else {
+        pages.push(1, '...', current - 1, current, current + 1, '...', total)
+      }
+    }
+
+    return pages.map((page, index) =>
+      page === '...' ? (
+        <span key={index} className="px-3 py-2 text-neutral-500">
+          ...
+        </span>
+      ) : (
+        <button
+          key={index}
+          onClick={() => handleClassroomPageChange(Number(page))}
+          className={`h-9 w-9 rounded-md flex items-center justify-center font-medium transition ${
+            current === page
+              ? 'bg-blue-600 text-white shadow-sm'
+              : 'text-neutral-700 hover:bg-neutral-200'
+          }`}
+        >
+          {page}
+        </button>
+      ),
+    )
   }
 
   const generateReport = async (cls: string, day: string | null) => {
@@ -160,7 +216,8 @@ export const DashboardPage: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Object.entries(grouped).map(([cls, days]) => {
+            {paginatedClassrooms.map((cls) => {
+              const days = grouped[cls]
               const selDay = selectedDayByClass[cls] ?? null
               const sess = sessionByClass[cls] ?? 'all'
               const page = pageByClass[cls] ?? 1
@@ -172,10 +229,10 @@ export const DashboardPage: React.FC = () => {
                 const hr = new Date(r.date).getHours()
                 return sess === 'mat' ? hr < 12 : hr >= 12
               })
-              const totalPages = Math.ceil(toShow.length / PAGE_SIZE)
+              const totalPages = Math.ceil(toShow.length / RECORDS_PER_PAGE)
               const paginated = toShow.slice(
-                (page - 1) * PAGE_SIZE,
-                page * PAGE_SIZE,
+                (page - 1) * RECORDS_PER_PAGE,
+                page * RECORDS_PER_PAGE,
               )
 
               return (
@@ -304,25 +361,20 @@ export const DashboardPage: React.FC = () => {
                     </table>
                   </div>
 
-                  {/* Paginación */}
+                  {/* Paginación de registros */}
                   {totalPages > 1 && (
                     <div className="flex items-center justify-center gap-2 mb-4">
                       <button
-                        onClick={() => handlePageChange(cls, page - 1)}
+                        onClick={() => handleRecordsPageChange(cls, page - 1)}
                         disabled={page === 1}
-                        className={`p-1 rounded-full transition ${
+                        className={`p-1 rounded-full border transition-all duration-200 ${
                           page === 1
-                            ? 'text-neutral-300'
-                            : 'text-neutral-500 hover:bg-neutral-100'
+                            ? 'border-neutral-200 text-neutral-300'
+                            : 'border-neutral-400 text-neutral-700 hover:bg-neutral-100 hover:border-neutral-600'
                         }`}
                         aria-label="Página anterior"
                       >
-                        <svg
-                          width="24"
-                          height="24"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
+                        <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
                           <path
                             d="M15 18l-6-6 6-6"
                             stroke="currentColor"
@@ -336,21 +388,16 @@ export const DashboardPage: React.FC = () => {
                         Página {page} de {totalPages}
                       </span>
                       <button
-                        onClick={() => handlePageChange(cls, page + 1)}
+                        onClick={() => handleRecordsPageChange(cls, page + 1)}
                         disabled={page === totalPages}
-                        className={`p-1 rounded-full transition ${
+                        className={`p-1 rounded-full border transition-all duration-200 ${
                           page === totalPages
-                            ? 'text-neutral-300'
-                            : 'text-neutral-500 hover:bg-neutral-100'
+                            ? 'border-neutral-200 text-neutral-300'
+                            : 'border-neutral-400 text-neutral-700 hover:bg-neutral-100 hover:border-neutral-600'
                         }`}
                         aria-label="Página siguiente"
                       >
-                        <svg
-                          width="24"
-                          height="24"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
+                        <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
                           <path
                             d="M9 18l6-6-6-6"
                             stroke="currentColor"
@@ -376,6 +423,59 @@ export const DashboardPage: React.FC = () => {
           </div>
         )}
       </main>
+
+      {/* Paginación de salones */}
+      {!isLoading && totalClassroomPages > 1 && (
+        <div className="flex items-center justify-center mt-8 gap-2">
+          <button
+            onClick={() => handleClassroomPageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className={`p-2 rounded-lg transition-colors ${
+              currentPage === 1
+                ? 'text-neutral-400'
+                : 'text-neutral-600 hover:bg-neutral-100'
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+          <div className="flex items-center space-x-1">{renderPageNumbers()}</div>
+          <button
+            onClick={() => handleClassroomPageChange(currentPage + 1)}
+            disabled={currentPage === totalClassroomPages}
+            className={`p-2 rounded-lg transition-colors ${
+              currentPage === totalClassroomPages
+                ? 'text-neutral-400'
+                : 'text-neutral-600 hover:bg-neutral-100'
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </button>
+        </div>
+      )}
     </div>
   )
 }
