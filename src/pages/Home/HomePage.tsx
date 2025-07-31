@@ -4,7 +4,6 @@ import { FaRegClock, FaFilter, FaWifi, FaTabletAlt, FaArrowRight } from 'react-i
 
 export const HomePage: React.FC = () => (
   <div className="min-h-screen bg-gradient-to-b from-white to-blue-50" style={{ fontFamily: "'Segoe UI', Arial, sans-serif" }}>
-    {/* Hero Section */}
     <header className="relative bg-white shadow-md">
       <div className="container mx-auto flex flex-col md:flex-row items-center px-6 py-16">
         <div className="md:w-1/2">
@@ -31,8 +30,6 @@ export const HomePage: React.FC = () => (
         </div>
       </div>
     </header>
-
-    {/* Features Section */}
     <section className="container mx-auto px-6 py-12">
       <h2 className="text-3xl font-bold text-gray-900 mb-10 text-center">¿Por qué elegir EduTrack?</h2>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -58,8 +55,6 @@ export const HomePage: React.FC = () => (
         </div>
       </div>
     </section>
-
-    {/* Call to Action */}
     <section className="bg-white py-14 shadow-inner">
       <div className="container mx-auto px-6 flex flex-col md:flex-row items-center justify-between">
         <div className="mb-8 md:mb-0">

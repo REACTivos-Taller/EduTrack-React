@@ -99,8 +99,9 @@ export const DashboardPage: React.FC = () => {
           key={index}
           onClick={() => handleClassroomPageChange(Number(page))}
           className={`h-9 w-9 rounded-md flex items-center justify-center font-medium transition ${
+            // Color actualizado para el botón de paginación activo
             current === page
-              ? 'bg-blue-600 text-white shadow-sm'
+              ? 'bg-[#0067b8] text-white shadow-sm'
               : 'text-neutral-700 hover:bg-neutral-200'
           }`}
         >
@@ -209,7 +210,8 @@ export const DashboardPage: React.FC = () => {
         {isLoading ? (
           <div className="flex flex-col items-center justify-center h-96 bg-white rounded-lg shadow-sm border border-neutral-200">
             <div
-              className="w-10 h-10 border-4 border-b-transparent border-blue-600 rounded-full animate-spin"
+              // Color actualizado para el spinner de carga
+              className="w-10 h-10 border-4 border-b-transparent border-[#0067b8] rounded-full animate-spin"
               role="status"
             />
             <p className="mt-4 text-lg text-neutral-500">Cargando registros...</p>
@@ -242,7 +244,7 @@ export const DashboardPage: React.FC = () => {
                 >
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-semibold text-neutral-800 flex items-center gap-2">
-                      <span className="w-2 h-2 bg-blue-600 rounded-full" />
+                      <span className="w-2 h-2 bg-[#0067b8] rounded-full" />
                       Salón: {cls}
                     </h2>
                     <span className="text-sm font-medium text-neutral-500">
@@ -259,8 +261,9 @@ export const DashboardPage: React.FC = () => {
                       <button
                         onClick={() => handleSelectDay(cls, null)}
                         className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                          // Color actualizado para el filtro de día activo
                           selDay === null
-                            ? 'bg-blue-600 text-white shadow'
+                            ? 'bg-[#0067b8] text-white shadow'
                             : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
                         }`}
                       >
@@ -271,8 +274,9 @@ export const DashboardPage: React.FC = () => {
                           key={d}
                           onClick={() => handleSelectDay(cls, d)}
                           className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                            // Color actualizado para el filtro de día activo
                             selDay === d
-                              ? 'bg-blue-600 text-white shadow'
+                              ? 'bg-[#0067b8] text-white shadow'
                               : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
                           }`}
                         >
@@ -293,15 +297,15 @@ export const DashboardPage: React.FC = () => {
                           onClick={() => handleSelectSession(cls, s)}
                           className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
                             sess === s
-                              ? 'bg-green-500 text-white shadow'
+                              ? 'bg-green-500 text-white shadow' // Mantengo el color verde para la jornada, ya que no se solicitó cambiarlo
                               : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
                           }`}
                         >
                           {s === 'all'
                             ? 'Ambos'
                             : s === 'mat'
-                              ? 'Matutino'
-                              : 'Vespertino'}
+                            ? 'Matutino'
+                            : 'Vespertino'}
                         </button>
                       ))}
                     </div>
@@ -413,7 +417,8 @@ export const DashboardPage: React.FC = () => {
                   {/* Botón de reporte */}
                   <button
                     onClick={() => generateReport(cls, selDay)}
-                    className="w-full mt-auto rounded-md bg-blue-600 py-2 text-base font-semibold text-white transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600"
+                    // Se aplicó el color y el hover del código que proporcionaste.
+                    className="w-full mt-auto rounded-md bg-[#0067b8] hover:bg-[#005a9e] py-2 text-base font-semibold text-white transition-colors duration-200 shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0067b8]"
                   >
                     Generar Reporte Excel
                   </button>
