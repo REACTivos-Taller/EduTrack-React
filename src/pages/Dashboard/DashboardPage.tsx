@@ -5,7 +5,6 @@ import ExcelJS from 'exceljs'
 import { saveAs } from 'file-saver'
 import toast from 'react-hot-toast'
 
-// Trae todas las imágenes .jpeg de ese directorio
 const imageModules = import.meta.glob('../../assets/imagenes/*.jpeg', {
   eager: true,
   import: 'default',
@@ -13,12 +12,17 @@ const imageModules = import.meta.glob('../../assets/imagenes/*.jpeg', {
 
 type Session = 'all' | 'mat' | 'ves'
 
+const PAGE_SIZE = 12
+
 export const DashboardPage: React.FC = () => {
   const { fetchRegistries, registries, isLoading } = useGetRegistries()
-  const [selectedDayByClass, setSelectedDayByClass] = useState<Record<string, string | null>>(
+  const [selectedDayByClass, setSelectedDayByClass] = useState<
+    Record<string, string | null>
+  >({})
+  const [sessionByClass, setSessionByClass] = useState<Record<string, Session>>(
     {},
   )
-  const [sessionByClass, setSessionByClass] = useState<Record<string, Session>>({})
+  const [pageByClass, setPageByClass] = useState<Record<string, number>>({})
 
   useEffect(() => {
     fetchRegistries()
@@ -36,10 +40,19 @@ export const DashboardPage: React.FC = () => {
     return map
   }, [registries])
 
-  const handleSelectDay = (cls: string, day: string | null) =>
+  const handleSelectDay = (cls: string, day: string | null) => {
     setSelectedDayByClass((p) => ({ ...p, [cls]: day }))
-  const handleSelectSession = (cls: string, sess: Session) =>
+    setPageByClass((p) => ({ ...p, [cls]: 1 })) // Reset page on day change
+  }
+
+  const handleSelectSession = (cls: string, sess: Session) => {
     setSessionByClass((p) => ({ ...p, [cls]: sess }))
+    setPageByClass((p) => ({ ...p, [cls]: 1 })) // Reset page on session change
+  }
+
+  const handlePageChange = (cls: string, newPage: number) => {
+    setPageByClass((p) => ({ ...p, [cls]: newPage }))
+  }
 
   const generateReport = async (cls: string, day: string | null) => {
     const days = grouped[cls] || {}
@@ -65,9 +78,9 @@ export const DashboardPage: React.FC = () => {
       const firstEntry = sorted.find((x) => x.type === 'entry')?.d
       const lastExit = [...sorted].reverse().find((x) => x.type === 'exit')?.d
       const duration =
-        firstEntry && lastExit ?
-          Math.round((lastExit.getTime() - firstEntry.getTime()) / 60000)
-        : ''
+        firstEntry && lastExit
+          ? Math.round((lastExit.getTime() - firstEntry.getTime()) / 60000)
+          : ''
       return {
         Carné: student,
         'Hora Entrada': firstEntry ? firstEntry.toLocaleTimeString() : '',
@@ -121,97 +134,248 @@ export const DashboardPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-8 transition-colors duration-300 sm:px-8 dark:bg-gray-900">
-      <h1 className="animate-slide-in mb-12 text-center text-4xl font-extrabold text-gray-900 sm:text-5xl lg:text-6xl dark:text-gray-100">
-        Dashboard de Registros
-      </h1>
+    <div
+      className="min-h-screen p-8 bg-neutral-50"
+      style={{ fontFamily: "'Segoe UI', 'Segoe UI Web', sans-serif" }}
+    >
+      {/* Header */}
+      <header className="mb-10 max-w-7xl mx-auto">
+        <h1 className="text-4xl font-semibold text-neutral-900 tracking-tight">
+          Panel de Registros
+        </h1>
+        <p className="text-neutral-500 text-lg mt-1">
+          Visualiza y exporta los registros de asistencia por salón y jornada
+        </p>
+      </header>
 
-      {isLoading ?
-        <p className="text-center text-2xl text-gray-600 dark:text-gray-400">Cargando…</p>
-      : <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {Object.entries(grouped).map(([cls, days]) => {
-            const selDay = selectedDayByClass[cls] ?? null
-            const sess = sessionByClass[cls] ?? 'all'
-            const baseRecs = selDay ? days[selDay] || [] : Object.values(days).flat()
-            const toShow = baseRecs.filter((r) => {
-              if (sess === 'all') return true
-              const hr = new Date(r.date).getHours()
-              return sess === 'mat' ? hr < 12 : hr >= 12
-            })
+      {/* Main content */}
+      <main className="max-w-7xl mx-auto">
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center h-96 bg-white rounded-lg shadow-sm border border-neutral-200">
+            <div
+              className="w-10 h-10 border-4 border-b-transparent border-blue-600 rounded-full animate-spin"
+              role="status"
+            />
+            <p className="mt-4 text-lg text-neutral-500">Cargando registros...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Object.entries(grouped).map(([cls, days]) => {
+              const selDay = selectedDayByClass[cls] ?? null
+              const sess = sessionByClass[cls] ?? 'all'
+              const page = pageByClass[cls] ?? 1
+              const baseRecs = selDay
+                ? days[selDay] || []
+                : Object.values(days).flat()
+              const toShow = baseRecs.filter((r) => {
+                if (sess === 'all') return true
+                const hr = new Date(r.date).getHours()
+                return sess === 'mat' ? hr < 12 : hr >= 12
+              })
+              const totalPages = Math.ceil(toShow.length / PAGE_SIZE)
+              const paginated = toShow.slice(
+                (page - 1) * PAGE_SIZE,
+                page * PAGE_SIZE,
+              )
 
-            return (
-              <div
-                key={cls}
-                className="animate-slide-in transform rounded-2xl bg-white p-6 shadow-lg transition-transform duration-300 hover:scale-105 dark:bg-gray-800"
-              >
-                <h2 className="mb-4 text-3xl font-bold text-gray-900 sm:text-4xl dark:text-gray-100">
-                  Salón: {cls}
-                </h2>
-
-                {/* Día */}
-                <div className="mb-4 flex flex-wrap gap-2">
-                  <button
-                    onClick={() => handleSelectDay(cls, null)}
-                    className={`rounded-full px-4 py-2 text-xl transition ${
-                      selDay === null ?
-                        'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600'
-                    }`}
-                  >
-                    Todos
-                  </button>
-                  {Object.keys(days).map((d) => (
-                    <button
-                      key={d}
-                      onClick={() => handleSelectDay(cls, d)}
-                      className={`rounded-full px-4 py-2 text-xl transition ${
-                        selDay === d ?
-                          'bg-blue-600 text-white'
-                        : 'bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600'
-                      }`}
-                    >
-                      {d}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Jornada */}
-                <div className="mb-6 flex flex-wrap gap-2">
-                  {(['all', 'mat', 'ves'] as Session[]).map((s) => (
-                    <button
-                      key={s}
-                      onClick={() => handleSelectSession(cls, s)}
-                      className={`rounded-full px-4 py-2 text-xl transition ${
-                        sess === s ?
-                          'bg-green-600 text-white'
-                        : 'bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600'
-                      }`}
-                    >
-                      {s === 'all' ?
-                        'Ambos'
-                      : s === 'mat' ?
-                        'Matutino'
-                      : 'Vespertino'}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Reporte */}
-                <button
-                  onClick={() => generateReport(cls, selDay)}
-                  className="mb-4 w-full rounded-xl bg-blue-600 py-4 text-2xl font-semibold text-white transition-colors duration-300 hover:bg-blue-700"
+              return (
+                <div
+                  key={cls}
+                  className="bg-white rounded-lg shadow-sm border border-neutral-200 flex flex-col p-6 transition-all duration-200 hover:shadow-lg"
                 >
-                  Generar Reporte
-                </button>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-semibold text-neutral-800 flex items-center gap-2">
+                      <span className="w-2 h-2 bg-blue-600 rounded-full" />
+                      Salón: {cls}
+                    </h2>
+                    <span className="text-sm font-medium text-neutral-500">
+                      Movimientos: {toShow.length}
+                    </span>
+                  </div>
 
-                <p className="text-xl text-gray-700 dark:text-gray-300">
-                  Movimientos mostrados: <span className="font-bold">{toShow.length}</span>
-                </p>
-              </div>
-            )
-          })}
-        </div>
-      }
+                  {/* Filtros */}
+                  <div className="mb-4">
+                    <div className="text-sm font-medium text-neutral-700 mb-2">
+                      Filtrar por día:
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        onClick={() => handleSelectDay(cls, null)}
+                        className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                          selDay === null
+                            ? 'bg-blue-600 text-white shadow'
+                            : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+                        }`}
+                      >
+                        Todos
+                      </button>
+                      {Object.keys(days).map((d) => (
+                        <button
+                          key={d}
+                          onClick={() => handleSelectDay(cls, d)}
+                          className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                            selDay === d
+                              ? 'bg-blue-600 text-white shadow'
+                              : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+                          }`}
+                        >
+                          {d}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mb-6">
+                    <div className="text-sm font-medium text-neutral-700 mb-2">
+                      Filtrar por jornada:
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {(['all', 'mat', 'ves'] as Session[]).map((s) => (
+                        <button
+                          key={s}
+                          onClick={() => handleSelectSession(cls, s)}
+                          className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                            sess === s
+                              ? 'bg-green-500 text-white shadow'
+                              : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+                          }`}
+                        >
+                          {s === 'all'
+                            ? 'Ambos'
+                            : s === 'mat'
+                              ? 'Matutino'
+                              : 'Vespertino'}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Tabla de registros */}
+                  <div className="flex-1 overflow-x-auto mb-4">
+                    <table className="w-full text-sm text-left border-collapse">
+                      <thead className="sticky top-0 bg-neutral-50">
+                        <tr className="border-b border-neutral-200">
+                          <th className="py-2 pr-2 font-medium text-neutral-500">
+                            Carné
+                          </th>
+                          <th className="py-2 px-2 font-medium text-neutral-500">
+                            Tipo
+                          </th>
+                          <th className="py-2 px-2 font-medium text-neutral-500">
+                            Hora
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {paginated.length === 0 ? (
+                          <tr>
+                            <td colSpan={3} className="text-center py-6 text-neutral-400">
+                              No hay registros para mostrar.
+                            </td>
+                          </tr>
+                        ) : (
+                          paginated.map((r, i) => (
+                            <tr
+                              key={r._id || i}
+                              className="border-b border-neutral-100 hover:bg-blue-50 transition-colors duration-150"
+                            >
+                              <td className="py-2 pr-2 text-neutral-800">{r.studentCardNumber}</td>
+                              <td className="py-2 px-2">
+                                <span
+                                  className={`inline-block px-2 py-1 rounded text-xs font-semibold ${
+                                    r.type === 'entry'
+                                      ? 'bg-green-100 text-green-700'
+                                      : 'bg-red-100 text-red-700'
+                                  }`}
+                                >
+                                  {r.type === 'entry' ? 'Entrada' : 'Salida'}
+                                </span>
+                              </td>
+                              <td className="py-2 pl-2 text-neutral-600">
+                                {new Date(r.date).toLocaleTimeString([], {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                })}
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Paginación */}
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-center gap-2 mb-4">
+                      <button
+                        onClick={() => handlePageChange(cls, page - 1)}
+                        disabled={page === 1}
+                        className={`p-1 rounded-full transition ${
+                          page === 1
+                            ? 'text-neutral-300'
+                            : 'text-neutral-500 hover:bg-neutral-100'
+                        }`}
+                        aria-label="Página anterior"
+                      >
+                        <svg
+                          width="24"
+                          height="24"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M15 18l-6-6 6-6"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </button>
+                      <span className="text-sm font-medium text-neutral-600">
+                        Página {page} de {totalPages}
+                      </span>
+                      <button
+                        onClick={() => handlePageChange(cls, page + 1)}
+                        disabled={page === totalPages}
+                        className={`p-1 rounded-full transition ${
+                          page === totalPages
+                            ? 'text-neutral-300'
+                            : 'text-neutral-500 hover:bg-neutral-100'
+                        }`}
+                        aria-label="Página siguiente"
+                      >
+                        <svg
+                          width="24"
+                          height="24"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M9 18l6-6-6-6"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Botón de reporte */}
+                  <button
+                    onClick={() => generateReport(cls, selDay)}
+                    className="w-full mt-auto rounded-md bg-blue-600 py-2 text-base font-semibold text-white transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600"
+                  >
+                    Generar Reporte Excel
+                  </button>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </main>
     </div>
   )
 }

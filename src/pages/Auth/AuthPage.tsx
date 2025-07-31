@@ -28,15 +28,12 @@ export const AuthPage: React.FC = () => {
       <div className="relative w-full max-w-md rounded-2xl bg-white shadow-xl px-8 py-10 flex flex-col items-center">
         {/* Microsoft Logo */}
         <div className="mb-6 flex flex-col items-center">
-          <div className="flex items-center mb-2">
-            <span className="inline-block w-2.5 h-2.5 bg-[#f25022] mr-0.5 rounded-sm" />
-            <span className="inline-block w-2.5 h-2.5 bg-[#7fba00] mr-0.5 rounded-sm" />
-            <span className="inline-block w-2.5 h-2.5 bg-[#00a4ef] mr-0.5 rounded-sm" />
-            <span className="inline-block w-2.5 h-2.5 bg-[#ffb900] rounded-sm" />
-          </div>
-          <span className="text-xl font-semibold text-gray-700" style={{ fontFamily: "'Segoe UI', Arial, sans-serif" }}>
-            Microsoft
-          </span>
+          <svg width="40" height="40" viewBox="0 0 48 48" className="mb-2" aria-label="Microsoft logo">
+            <rect x="2" y="2" width="20" height="20" fill="#f25022" rx="3" />
+            <rect x="26" y="2" width="20" height="20" fill="#7fba00" rx="3" />
+            <rect x="2" y="26" width="20" height="20" fill="#00a4ef" rx="3" />
+            <rect x="26" y="26" width="20" height="20" fill="#ffb900" rx="3" />
+          </svg>
         </div>
         <h1 className="text-2xl font-normal text-gray-900 mb-2" style={{ fontFamily: "'Segoe UI', Arial, sans-serif" }}>
           Iniciar sesión
@@ -51,18 +48,13 @@ export const AuthPage: React.FC = () => {
           {isLoading ? 'Cargando...' : 'Iniciar con Microsoft'}
         </button>
         <a
-          href="#"
+          href="https://www.kinal.org.gt/"
           className="text-[#106ebe] hover:underline text-sm mb-4"
           style={{ fontFamily: "'Segoe UI', Arial, sans-serif" }}
         >
           ¿No puedes acceder a tu cuenta?
         </a>
-        <div className="text-center text-sm text-gray-600 mt-2">
-          ¿Nuevo en EduTrack?{' '}
-          <a href="#" className="text-[#106ebe] hover:underline">
-            Crear una cuenta
-          </a>
-        </div>
+
       </div>
       {/* Background shapes */}
       <div
