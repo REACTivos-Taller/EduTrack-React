@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { FaRegClock, FaFilter, FaWifi, FaTabletAlt, FaArrowRight, FaUserGraduate, FaChalkboardTeacher } from 'react-icons/fa'
+import { FaRegClock, FaFilter, FaWifi, FaTabletAlt, FaArrowRight } from 'react-icons/fa'
 
 export const HomePage: React.FC = () => (
   <div className="min-h-screen bg-gradient-to-b from-white to-blue-50" style={{ fontFamily: "'Segoe UI', Arial, sans-serif" }}>
