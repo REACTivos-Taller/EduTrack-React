@@ -297,12 +297,6 @@ export const HomePage: React.FC = () => {
             >
               Registrar Ahora <ArrowRight size={18} />
             </Link>
-            <Link
-              to="/dashboard/registries"
-              className="bg-white dark:bg-gray-700 border border-[#0067b8] text-[#0067b8] dark:text-blue-300 hover:bg-[#e5f1fb] dark:hover:bg-gray-600 font-semibold px-7 py-3 rounded-xl shadow-lg transition transform hover:-translate-y-1 hover:scale-105 flex items-center justify-center gap-2 text-base"
-            >
-              Ver Historial <ArrowRight size={18} />
-            </Link>
           </div>
         </div>
       </section>
