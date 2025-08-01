@@ -1,4 +1,3 @@
-// src/shared/hooks/useUserDetails.tsx
 import { useEffect, useState, useCallback } from 'react'
 import { useMsal, useIsAuthenticated } from '@azure/msal-react'
 import { InteractionStatus } from '@azure/msal-browser'

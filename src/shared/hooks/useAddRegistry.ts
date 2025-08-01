@@ -1,18 +1,20 @@
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import type { AddRegistryResponse, RegistryType } from '../../services/api'
+import { addRegistry } from '../../services/api'
+import { useMsal } from '@azure/msal-react'
 
 type AddRegistryPayload = {
   studentCardNumber: string
   type: RegistryType
   classroom: string
 }
-import { addRegistry as addRegistryRequest } from '../../services/api'
 
 export const useAddRegistry = () => {
+  const { instance: msalInstance } = useMsal()
   const [isLoading, setIsLoading] = useState(false)
 
-  const addRegistry = async (
+  const addRegistryFn = async (
     studentCardNumber: string,
     type: RegistryType,
     classroom: string,
@@ -20,7 +22,7 @@ export const useAddRegistry = () => {
     setIsLoading(true)
     try {
       const payload: AddRegistryPayload = { studentCardNumber, type, classroom }
-      const response = await addRegistryRequest(payload)
+      const response = await addRegistry(msalInstance, payload)
 
       if ('error' in response && response.error) {
         toast.error(response.message)
@@ -40,5 +42,5 @@ export const useAddRegistry = () => {
     }
   }
 
-  return { addRegistry, isLoading }
+  return { addRegistry: addRegistryFn, isLoading }
 }
