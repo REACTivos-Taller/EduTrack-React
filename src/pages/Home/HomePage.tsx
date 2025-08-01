@@ -152,7 +152,7 @@ export const HomePage: React.FC = () => {
           <li><span className="font-semibold">✓</span> Soporte por correo electrónico</li>
         </ul>
         <a
-          href="https://wa.me/50253131195"
+          href="https://wa.me/50253131195?text=Hola%2C%20me%20interesa%20el%20Plan%20B%C3%A1sico%20de%20Q25%2Fmes%20para%20instituciones%20peque%C3%B1as.%20%C2%BFPodr%C3%ADan%20brindarme%20m%C3%A1s%20informaci%C3%B3n%3F"
           target="_blank"
           rel="noopener noreferrer"
           className="block bg-[#0067b8] hover:bg-[#005a9e] text-white font-semibold py-3 rounded-xl shadow-lg transition-colors"
@@ -174,7 +174,7 @@ export const HomePage: React.FC = () => {
           <li><span className="font-semibold">✓</span> Analíticas avanzadas</li>
         </ul>
         <a
-          href="https://wa.me/50253131195"
+          href="https://wa.me/50253131195?text=Hola%2C%20estoy%20interesado%20en%20el%20Plan%20Est%C3%A1ndar%20de%20Q100%2Fmes%20para%20instituciones%20en%20crecimiento.%20%C2%BFPodr%C3%ADan%20darme%20m%C3%A1s%20detalles%3F"
           target="_blank"
           rel="noopener noreferrer"
           className="block bg-white hover:bg-gray-100 text-[#0067b8] font-semibold py-3 rounded-xl shadow-lg transition-colors"
@@ -196,7 +196,7 @@ export const HomePage: React.FC = () => {
           <li><span className="font-semibold">✓</span> Características personalizadas</li>
         </ul>
         <a
-          href="https://wa.me/50253131195"
+          href="https://wa.me/50253131195?text=Hola%2C%20me%20interesa%20el%20Plan%20Premium%20de%20Q250%2Fmes%20para%20mi%20organización.%20%C2%BFPodr%C3%ADan%20darme%20m%C3%A1s%20informaci%C3%B3n%3F"
           target="_blank"
           rel="noopener noreferrer"
           className="block bg-[#0067b8] hover:bg-[#005a9e] text-white font-semibold py-3 rounded-xl shadow-lg transition-colors"
@@ -218,14 +218,14 @@ export const HomePage: React.FC = () => {
           <li><span className="font-semibold">✓</span> Analíticas avanzadas</li>
           <li><span className="font-semibold">✓</span> Características personalizadas</li>
         </ul>
-        <a
-          href="https://wa.me/50253131195"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block bg-white hover:bg-gray-100 text-[#0067b8] font-semibold py-3 rounded-xl shadow-lg transition-colors"
-        >
-          Solicitar Plan Gratuito
-        </a>
+            <a
+              href="https://wa.me/50253131195?text=Hola%2C%20estoy%20interesado%20en%20el%20plan%20gratuito%20Premium%20para%20Fundaci%C3%B3n%20Kinal"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block bg-white hover:bg-gray-100 text-[#0067b8] font-semibold py-3 rounded-xl shadow-lg transition-colors"
+            >
+              Solicitar Plan Gratuito
+            </a>
       </div>
     </div>
   </div>
