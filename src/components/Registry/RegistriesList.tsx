@@ -1,156 +1,208 @@
-// src/components/Registry/RegistriesList.tsx
-import React, { useState, useEffect, useMemo } from 'react';
-import { useGetRegistries } from '../../shared/hooks/useGetRegistries';
-import type { Registry } from '../../services/api';
+import React, { useState, useEffect, useMemo } from 'react'
+import { useGetRegistries } from '../../shared/hooks/useGetRegistries'
+import type { Registry } from '../../services/api'
 
 export const RegistriesList: React.FC = () => {
-  const { fetchRegistries, registries, isLoading } = useGetRegistries();
-  const [from, setFrom] = useState<string>('');
-  const [to, setTo] = useState<string>('');
-  const [selectedDayByClass, setSelectedDayByClass] = useState<Record<string, string | null>>({});
+  const { fetchRegistries, registries, isLoading } = useGetRegistries()
+  const [from, setFrom] = useState<string>('')
+  const [to, setTo] = useState<string>('')
+  const [selectedDayByClass, setSelectedDayByClass] = useState<Record<string, string | null>>({})
 
-  // Carga inicial
   useEffect(() => {
-    fetchRegistries();
-  }, [fetchRegistries]);
+    fetchRegistries()
+  }, [fetchRegistries])
 
-  // Filtrado por rango de fechas (local)
   const filtered = useMemo(() => {
     return registries.filter((r) => {
-      const dt = new Date(r.date);
-      if (from && dt < new Date(from)) return false;
-      if (to && dt > new Date(to)) return false;
-      return true;
-    });
-  }, [registries, from, to]);
+      const dt = new Date(r.date)
+      if (from && dt < new Date(from)) return false
+      if (to && dt > new Date(to)) return false
+      return true
+    })
+  }, [registries, from, to])
 
-  // Agrupa por salón y día
   const grouped = useMemo(() => {
-    const map: Record<string, Record<string, Registry[]>> = {};
+    const map: Record<string, Record<string, Registry[]>> = {}
     filtered.forEach((r) => {
-      const cls = r.classroom || 'General';
-      const day = new Date(r.date).toLocaleDateString();
-      map[cls] = map[cls] || {};
-      map[cls][day] = map[cls][day] || [];
-      map[cls][day].push(r);
-    });
-    return map;
-  }, [filtered]);
+      const cls = r.classroom || 'General'
+      const day = new Date(r.date).toLocaleDateString()
+      map[cls] = map[cls] || {}
+      map[cls][day] = map[cls][day] || []
+      map[cls][day].push(r)
+    })
+    return map
+  }, [filtered])
 
   const handleSelectDay = (cls: string, day: string | null) => {
-    setSelectedDayByClass((prev) => ({ ...prev, [cls]: day }));
-  };
+    setSelectedDayByClass((prev) => ({ ...prev, [cls]: day }))
+  }
 
   return (
-    <div className="min-h-screen p-8 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-      <h2 className="text-4xl font-extrabold text-center mb-8 text-gray-900 dark:text-gray-100">
-        Historial de Registros
-      </h2>
+    <div
+      className="min-h-screen p-8 bg-neutral-50"
+      style={{ fontFamily: "'Segoe UI', 'Segoe UI Web', sans-serif" }}
+    >
+      {/* Header */}
+      <header className="mb-10 max-w-7xl mx-auto">
+        <h1 className="text-4xl font-semibold text-neutral-900 tracking-tight">
+          Historial de Registros
+        </h1>
+        <p className="text-neutral-500 text-lg mt-1">
+          Consulta los movimientos de entrada y salida por salón
+        </p>
+      </header>
 
-      {/* Filtros de fechas */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-        <div className="flex-1">
-          <label className="block text-2xl font-semibold mb-2 text-gray-700 dark:text-gray-200">
-            Desde
-          </label>
-          <input
-            type="date"
-            value={from}
-            onChange={(e) => setFrom(e.target.value)}
-            className="w-full p-4 text-2xl border-2 rounded-lg focus:outline-none focus:border-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:focus:border-blue-400"
-          />
+      {/* Main content */}
+      <main className="max-w-7xl mx-auto">
+        {/* Filtros de fecha */}
+        <div className="mb-8 p-6 bg-white rounded-lg shadow-sm border border-neutral-200">
+          <div className="flex flex-col sm:flex-row gap-6">
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-neutral-700 mb-2">
+                Desde
+              </label>
+              <input
+                type="date"
+                value={from}
+                onChange={(e) => setFrom(e.target.value)}
+                className="w-full rounded-md border px-4 py-2 text-base border-neutral-300 bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-[#0067b8]"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-neutral-700 mb-2">
+                Hasta
+              </label>
+              <input
+                type="date"
+                value={to}
+                onChange={(e) => setTo(e.target.value)}
+                className="w-full rounded-md border px-4 py-2 text-base border-neutral-300 bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-[#0067b8]"
+              />
+            </div>
+          </div>
         </div>
-        <div className="flex-1">
-          <label className="block text-2xl font-semibold mb-2 text-gray-700 dark:text-gray-200">
-            Hasta
-          </label>
-          <input
-            type="date"
-            value={to}
-            onChange={(e) => setTo(e.target.value)}
-            className="w-full p-4 text-2xl border-2 rounded-lg focus:outline-none focus:border-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:focus:border-blue-400"
-          />
-        </div>
-      </div>
 
-      {isLoading ? (
-        <p className="text-center text-2xl text-gray-600 dark:text-gray-400">Cargando registros…</p>
-      ) : (
-        <div className="space-y-12">
-          {Object.entries(grouped).map(([cls, days]) => {
-            const allRecords = Object.values(days).flat();
-            const selected = selectedDayByClass[cls] ?? null;
-            const toShow = selected ? days[selected] || [] : allRecords;
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center h-96 bg-white rounded-lg shadow-sm border border-neutral-200">
+            <div
+              className="w-10 h-10 border-4 border-b-transparent border-[#0067b8] rounded-full animate-spin"
+              role="status"
+            />
+            <p className="mt-4 text-lg text-neutral-500">Cargando registros...</p>
+          </div>
+        ) : (
+          <div className="space-y-8">
+            {Object.entries(grouped).map(([cls, days]) => {
+              const allRecords = Object.values(days).flat()
+              const selected = selectedDayByClass[cls] ?? null
+              const toShow = selected ? days[selected] || [] : allRecords
 
-            return (
-              <div key={cls} className="bg-white dark:bg-gray-800 shadow-2xl rounded-2xl p-8">
-                <h3 className="text-3xl font-bold mb-4 text-gray-900 dark:text-gray-100">
-                  Salón: {cls}
-                </h3>
+              return (
+                <div
+                  key={cls}
+                  className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-semibold text-neutral-800 flex items-center gap-2">
+                      <span className="w-2 h-2 bg-[#0067b8] rounded-full" />
+                      Salón: {cls}
+                    </h3>
+                    <span className="text-sm font-medium text-neutral-500">
+                      Total de movimientos: {toShow.length}
+                    </span>
+                  </div>
 
-                {/* Botones de selección de día */}
-                <div className="flex flex-wrap gap-4 mb-6">
-                  <button
-                    onClick={() => handleSelectDay(cls, null)}
-                    className={`px-6 py-3 rounded-full text-2xl font-medium transition ${
-                      selected === null
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600'
-                    }`}
-                  >
-                    Todos
-                  </button>
-                  {Object.keys(days).map((day) => (
-                    <button
-                      key={day}
-                      onClick={() => handleSelectDay(cls, day)}
-                      className={`px-6 py-3 rounded-full text-2xl font-medium transition ${
-                        selected === day
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600'
-                      }`}
-                    >
-                      {day}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Lista de registros */}
-                {toShow.length > 0 ? (
-                  <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-                    {toShow.map((r) => (
-                      <li
-                        key={r._id}
-                        className="py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2"
+                  {/* Botones de día */}
+                  <div className="mb-6">
+                    <div className="text-sm font-medium text-neutral-700 mb-2">
+                      Filtrar por día:
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        onClick={() => handleSelectDay(cls, null)}
+                        className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                          selected === null
+                            ? 'bg-[#0067b8] hover:bg-[#005a9e] text-white shadow'
+                            : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+                        }`}
                       >
-                        <span className="text-2xl font-medium text-gray-800 dark:text-gray-200">
-                          {r.studentCardNumber}
-                        </span>
-                        <span
-                          className={`text-2xl font-semibold ${
-                            r.type === 'entry'
-                              ? 'text-green-600'
-                              : 'text-red-600'
+                        Todos
+                      </button>
+                      {Object.keys(days).map((day) => (
+                        <button
+                          key={day}
+                          onClick={() => handleSelectDay(cls, day)}
+                          className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                            selected === day
+                              ? 'bg-[#0067b8] hover:bg-[#005a9e] text-white shadow'
+                              : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
                           }`}
                         >
-                          {r.type === 'entry' ? 'Entrada' : 'Salida'}
-                        </span>
-                        <span className="text-xl text-gray-500 dark:text-gray-400">
-                          {new Date(r.date).toLocaleTimeString()}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-center text-2xl text-gray-600 dark:text-gray-400">
-                    No hay registros para esta selección.
-                  </p>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
+                          {day}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Tabla de registros */}
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm text-left border-collapse">
+                      <thead className="sticky top-0 bg-white">
+                        <tr className="border-b border-neutral-200">
+                          <th className="py-2 pr-2 font-medium text-neutral-500">
+                            Carné
+                          </th>
+                          <th className="py-2 px-2 font-medium text-neutral-500">
+                            Tipo
+                          </th>
+                          <th className="py-2 pl-2 font-medium text-neutral-500">
+                            Hora
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {toShow.length === 0 ? (
+                          <tr>
+                            <td colSpan={3} className="text-center py-6 text-neutral-400">
+                              No hay registros para mostrar.
+                            </td>
+                          </tr>
+                        ) : (
+                          toShow.map((r, i) => (
+                            <tr
+                              key={r._id || i}
+                              className="border-b border-neutral-100 hover:bg-[#e6f2fa] transition-colors duration-150"
+                            >
+                              <td className="py-2 pr-2 text-neutral-800">{r.studentCardNumber}</td>
+                              <td className="py-2 px-2">
+                                <span
+                                  className={`inline-block px-2 py-1 rounded text-xs font-semibold ${
+                                    r.type === 'entry'
+                                      ? 'bg-green-100 text-green-700'
+                                      : 'bg-red-100 text-red-700'
+                                  }`}
+                                >
+                                  {r.type === 'entry' ? 'Entrada' : 'Salida'}
+                                </span>
+                              </td>
+                              <td className="py-2 pl-2 text-neutral-600">
+                                {new Date(r.date).toLocaleTimeString([], {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                })}
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </main>
     </div>
-  );
-};
+  )
+}
