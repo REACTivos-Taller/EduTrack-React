@@ -28,7 +28,7 @@ export const RegisterPage: React.FC = () => {
         )}
 
         {/* List Section */}
-        <div className="mt-6 rounded-lg bg-white p-6 shadow-md">
+        <div className="mt-6 rounded-lg bg-white p-0 shadow-md">
           <RegistriesList />
         </div>
       </div>
