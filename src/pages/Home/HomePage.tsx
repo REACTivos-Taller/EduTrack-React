@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState } from 'react';
 import { Link } from 'react-router-dom'; // Se asume que react-router-dom está instalado
 import { 
-  Clock, ArrowRight, Wifi, Tablet, BarChart, ShieldCheck, 
-  Quote, Compass, Mail, CreditCard, Users, Cloud, Trophy, Filter 
+  Clock, ArrowRight, Wifi, Tablet, ShieldCheck, 
+  Quote, Compass, Mail, CreditCard 
 } from 'lucide-react';
 
 // Mock de ThemeContext para que el código sea autocontenido y funcional.
