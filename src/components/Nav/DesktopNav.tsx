@@ -35,7 +35,7 @@ export const DesktopNav: React.FC = () => {
           <>
             <NavLink to="/dashboard" className={linkClasses}>
               <LayoutDashboard size={18} />
-              Dashboard
+              Ver Registros
             </NavLink>
             <NavLink to="/register" className={linkClasses}>
               <UserPlus size={18} />

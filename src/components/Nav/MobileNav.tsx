@@ -34,7 +34,7 @@ export const MobileNav: React.FC = () => {
           <>
             <NavLink to="/dashboard" className={navLinkClasses}>
               <LayoutDashboard size={20} />
-              <span className="mt-1">Dashboard</span>
+              <span className="mt-1">Ver Registros</span>
             </NavLink>
             <NavLink to="/register" className={navLinkClasses}>
               <UserPlus size={20} />
