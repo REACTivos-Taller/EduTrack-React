@@ -239,7 +239,7 @@ export const HomePage: React.FC = () => {
               </a>
             </div>
             
-            {/* Plan Gratuito Especial */}
+            {/* Plan Gratuito Especial Kinal */}
             <div className="bg-[#0067b8] text-white rounded-3xl shadow-2xl p-8 text-center transition-all duration-300 transform scale-105 hover:scale-110 relative z-10">
               <span className="absolute top-0 right-0 -mt-4 -mr-4 bg-yellow-400 text-yellow-900 text-xs font-bold uppercase rounded-full px-3 py-1">Especial</span>
               <CreditCard size={48} className="text-white mx-auto mb-4" />
