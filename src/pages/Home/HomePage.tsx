@@ -243,7 +243,7 @@ export const HomePage: React.FC = () => {
             <div className="bg-[#0067b8] text-white rounded-3xl shadow-2xl p-8 text-center transition-all duration-300 transform scale-105 hover:scale-110 relative z-10">
               <span className="absolute top-0 right-0 -mt-4 -mr-4 bg-yellow-400 text-yellow-900 text-xs font-bold uppercase rounded-full px-3 py-1">Especial</span>
               <CreditCard size={48} className="text-white mx-auto mb-4" />
-              <h3 className="font-semibold text-2xl mb-2">Estándar</h3>
+              <h3 className="font-semibold text-2xl mb-2">Premiun</h3>
               <p className="text-blue-200 text-sm mb-4">Especial si trabajas para Fundacion Kinal.</p>
               <p className="text-4xl font-bold mb-6">Q0<span className="text-lg font-normal text-blue-200">/mes</span></p>
               <ul className="text-left text-white mb-8 space-y-2">
