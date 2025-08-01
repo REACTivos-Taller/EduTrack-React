@@ -52,7 +52,7 @@ export const AuthPage: React.FC = () => {
           className="text-[#106ebe] hover:underline text-sm mb-4"
           style={{ fontFamily: "'Segoe UI', Arial, sans-serif" }}
         >
-          ¿No puedes acceder a tu cuenta?
+          Visita el sitio de Kinal
         </a>
 
       </div>
